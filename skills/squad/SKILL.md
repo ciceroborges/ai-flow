@@ -1,14 +1,14 @@
 ---
 name: squad
 description: Orquestra o AI Squad (Product Manager → Architect → Developer → QA Engineer → Reviewer) para desenvolver uma feature ou correção de ponta a ponta no projeto atual - discovery conversado com o Product Manager, issue criada no repositório, plano do Architect, implementação com testes, MR/PR aberto, validação real (API/Playwright) e revisão independente. Use quando o usuário digitar /squad <pedido> ou pedir para "rodar o squad".
-argument-hint: <descrição da feature ou bug> [--issues-repo owner/nome] [--issue <n>] [--local] [--auto]
+argument-hint: <descrição da feature ou bug> [--issues-repo owner/nome] [--issue <n>] [--no-issue] [--local] [--auto]
 ---
 
 # AI Squad — orquestrador
 
 Você é o **orquestrador**. Você não escreve spec, plano nem código: delega aos subagentes `squad-*` (ferramenta Agent), faz a ponte entre o usuário e o Product Manager, cuida de issue, branch e MR, controla os portões e o loop de correção.
 
-Linha do tempo: discovery (Product Manager) → plano (Architect) → **issue** → branch → implementação (Developer) → QA (QA Engineer) → code review (Reviewer) → **MR** na entrega final.
+Linha do tempo: discovery (Product Manager) → plano (Architect) → **issue (opcional)** → branch → implementação (Developer) → QA (QA Engineer) → code review (Reviewer) → **MR** na entrega final.
 
 Pedido do usuário: **$ARGUMENTS**
 
@@ -17,6 +17,7 @@ Se o pedido estiver vazio, pergunte o que deve ser feito e pare.
 Flags:
 - `--issues-repo owner/nome` — cria a issue nesse repositório em vez do repositório do projeto.
 - `--issue <n>` — usa uma issue já existente: leia-a e use como ponto de partida do discovery; ao final, atualize-a em vez de criar outra.
+- `--no-issue` — não cria issue; o contexto da tarefa vem só da conversa (discovery + spec) e vai para a descrição do MR.
 - `--local` — não cria issue, não faz push nem abre MR (tudo fica na branch local).
 - `--auto` — pula os portões de spec e plano. Nunca pula o discovery nem o portão final.
 
@@ -44,8 +45,15 @@ Resuma `spec.md`: objetivo, regras de negócio, critérios de aceite, tipo de mu
 Chame o `squad-architect`. Resuma `plan.md`: decisões, arquivos, passos, cobertura de CAs, roteiro do QA.
 **Portão:** Aprovar / Ajustar / Cancelar. Ajustar → SendMessage ao Architect.
 
-## 4. Issue (pule se `--local`)
-Com spec e plano aprovados — a issue registra a análise completa antes de começar o código:
+## 4. Issue (opcional)
+Com spec e plano aprovados, a issue registra a análise completa antes de começar o código. **É opcional:**
+- Pule se `--local` ou `--no-issue`.
+- Com `--issue <n>` ou `--issues-repo`, crie/atualize sem perguntar.
+- Sem nenhuma dessas flags, pergunte: **Criar issue** / Seguir sem issue. (Em `--auto`, crie.)
+
+Sem issue, o contexto da tarefa é o da conversa: `spec.md` e `plan.md` continuam sendo a fonte para todos os agentes, e o resumo deles vai para a descrição do MR na entrega final.
+
+Criando a issue:
 1. Monte `TASK/issue.md`:
    - Da spec: Contexto, Objetivo, Escopo, Fora de escopo, Regras de negócio, Critérios de aceite como checklist (`- [ ] CA-1: ...`).
    - Do plano: **Abordagem técnica** — decisões, arquivos afetados e passos em alto nível.
@@ -81,24 +89,25 @@ Não mencione spec, plano, QA, issue, discovery nem a conversa. Salve a resposta
 ## 9. Entrega final
 Só chega aqui com QA **APROVADO** e code review **APROVADO**.
 
-Mostre ao usuário: link da issue, branch, arquivos alterados (`git diff --stat BASE`), testes criados, QA por CA (e o que não foi validável), sugestões e perguntas do Reviewer, título e corpo do MR.
+Mostre ao usuário: link da issue (se houver), branch, arquivos alterados (`git diff --stat BASE`), testes criados, QA por CA (e o que não foi validável), sugestões e perguntas do Reviewer, título e corpo do MR.
 
 Pergunte: **Abrir MR** / Manter só local / Descartar.
 
 **Abrir MR** (pule se `--local`):
 1. Monte `TASK/mr-body.md`:
    - O conteúdo de `mr.md`.
-   - `Closes <ref>` se a issue estiver no mesmo repositório; senão `Relacionado a <ref>`.
+   - Com issue: `Closes <ref>` se estiver no mesmo repositório; senão `Relacionado a <ref>`.
+   - Sem issue: seção **Contexto** com o resumo da spec — objetivo, regras de negócio e critérios de aceite — e a **Abordagem técnica** do plano, já que não há issue para onde apontar.
    - **Validação**: veredito do QA, tabela de CAs com como cada um foi validado, o que não foi validável automaticamente.
    - **Code review automatizado**: veredito final, sugestões não bloqueantes e perguntas do Reviewer.
    - Sem referências a `.squad/` (cite que screenshots existem localmente, se houver).
 2. `git push -u origin <branch>`
 3. GitHub: `gh pr create --base <BASE_BRANCH> --title "<título>" --body-file TASK/mr-body.md`
    GitLab: `glab mr create --target-branch <BASE_BRANCH> --title "<título>" --description "$(cat TASK/mr-body.md)"`
-4. Na issue, comente o link do MR e marque os CAs validados no checklist (edite o corpo).
-5. Guarde a URL em `TASK/meta.md` e mostre os links da issue e do MR.
+4. Com issue: comente nela o link do MR e marque os CAs validados no checklist (edite o corpo).
+5. Guarde a URL em `TASK/meta.md` e mostre os links (issue, se houver, e MR).
 
-**Descartar:** pergunte de novo antes de apagar a branch local ou fechar a issue — cada uma é uma confirmação.
+**Descartar:** pergunte de novo antes de apagar a branch local ou fechar a issue (se houver) — cada uma é uma confirmação.
 
 Nunca faça merge.
 

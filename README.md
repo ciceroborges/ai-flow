@@ -7,13 +7,13 @@ Fluxo agêntico de desenvolvimento para o Claude Code: um squad de subagentes qu
    │
    ├─ squad-pm  ⇄ você   discovery em conversa → spec.md        ── Portão: spec
    ├─ squad-architect                 plano executável → plan.md             ── Portão: plano
-   ├─ 📌 Issue criada no repositório (spec + abordagem técnica)
-   ├─ branch squad/<issue>-<slug>
+   ├─ 📌 Issue (opcional) no repositório (spec + abordagem técnica)
+   ├─ branch squad/<issue>-<slug> ou squad/<slug>
    ├─ squad-dev                 TDD → código + testes + mr.md (commits locais)
    ├─ squad-qa               suíte + API (curl) + front (Playwright) → qa-report.md
    ├─ squad-reviewer                  code review cético, só código + descrição do MR → review.md
    │     └─ reprovou? volta ao developer (máx. 3 rodadas)
-   └─ 🚀 Entrega final: push + MR aberto (Closes #issue, validação e review no corpo)
+   └─ 🚀 Entrega final: push + MR aberto (Closes #issue ou contexto da spec, validação e review no corpo)
 ```
 
 Os artefatos de cada tarefa ficam em `.squad/<data>-<slug>/` no projeto (ignorado pelo git).
@@ -37,11 +37,11 @@ Ajuste no frontmatter (`model`, `effort`) de cada arquivo em `agents/`.
 
 - **Discovery (Product Manager):** investiga o código (o que existe, o que falta, regras de negócio, impactos) e devolve perguntas com opções e recomendação. O orquestrador te repassa, devolve suas respostas ao mesmo agente e repete até não sobrar dúvida que mude o escopo.
 - **Plano (Architect):** passos pequenos, cada um com os testes a escrever antes, implementação concreta e comando de "pronto". Inclui o roteiro de validação para o QA Engineer.
-- **Issue:** com spec e plano aprovados, a issue é criada no repositório do projeto (ou em outro, com `--issues-repo`) com contexto, regras, critérios de aceite em checklist e a abordagem técnica.
+- **Issue (opcional):** com spec e plano aprovados, o squad pergunta se deve criar a issue — no repositório do projeto ou em outro, com `--issues-repo` — com contexto, regras, critérios de aceite em checklist e a abordagem técnica. Sem issue, segue só com o contexto da conversa, e o resumo da spec vai para a descrição do MR.
 - **Implementação (Developer):** teste primeiro, depois código, suíte verde a cada passo. Escreve a descrição do MR (`mr.md`) como para um colega de fora. O orquestrador commita localmente na branch da issue.
 - **QA (QA Engineer):** classifica a mudança (API, front ou ambos), sobe a app, valida endpoints com `curl` e telas com Playwright (ambiente isolado em `.squad/<slug>/e2e/` se o projeto não tiver Playwright) e guarda evidências e screenshots.
 - **Code review (Reviewer):** um agente novo a cada rodada, que só recebe o diff e a descrição do MR — sem spec, plano, issue ou conversa — e é instruído a não ler `.squad/`. Revisa como uma pessoa de fora e só aponta o que consegue sustentar com um cenário de falha.
-- **Entrega final:** com QA e code review aprovados, você confirma e o orquestrador faz push, abre o MR (com `Closes #issue`, resultado do QA e do code review) e comenta o link na issue. Nunca faz merge.
+- **Entrega final:** com QA e code review aprovados, você confirma e o orquestrador faz push e abre o MR (com `Closes #issue` ou o contexto da spec, resultado do QA e do code review), comentando o link na issue quando houver. Nunca faz merge.
 
 ## Requisitos
 
@@ -84,6 +84,7 @@ Em qualquer projeto, no Claude Code:
 |---|---|
 | `--issues-repo owner/nome` | Cria a issue em outro repositório. |
 | `--issue <n>` | Parte de uma issue existente e a atualiza em vez de criar outra. |
+| `--no-issue` | Não cria issue; segue só com o contexto da conversa e abre o MR no final. |
 | `--local` | Sem issue, sem push, sem MR — tudo na branch local. |
 | `--auto` | Pula as aprovações de spec e plano (discovery e entrega final continuam). |
 
