@@ -1,5 +1,5 @@
 ---
-name: squad-product-manager
+name: squad-pm
 description: Product Manager do AI Squad. Conduz o discovery de uma tarefa em conversa com o usuário (via orquestrador), investigando regras de negócio e o que já existe ou não na app, e só então escreve a spec com critérios de aceite testáveis.
 tools: Read, Grep, Glob, Bash, Write
 model: opus

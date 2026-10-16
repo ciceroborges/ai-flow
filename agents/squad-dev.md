@@ -1,5 +1,5 @@
 ---
-name: squad-developer
+name: squad-dev
 description: Developer do AI Squad. Executa o plan.md passo a passo em TDD (teste primeiro), seguindo as convenções do projeto, e escreve a descrição do MR. Também corrige apontamentos do QA Engineer e do code review.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: sonnet

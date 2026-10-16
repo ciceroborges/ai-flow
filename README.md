@@ -5,12 +5,12 @@ Fluxo agêntico de desenvolvimento para o Claude Code: um squad de subagentes qu
 ```
 /squad <pedido>
    │
-   ├─ squad-product-manager  ⇄ você   discovery em conversa → spec.md        ── Portão: spec
+   ├─ squad-pm  ⇄ você   discovery em conversa → spec.md        ── Portão: spec
    ├─ squad-architect                 plano executável → plan.md             ── Portão: plano
    ├─ 📌 Issue criada no repositório (spec + abordagem técnica)
    ├─ branch squad/<issue>-<slug>
-   ├─ squad-developer                 TDD → código + testes + mr.md (commits locais)
-   ├─ squad-qa-engineer               suíte + API (curl) + front (Playwright) → qa-report.md
+   ├─ squad-dev                 TDD → código + testes + mr.md (commits locais)
+   ├─ squad-qa               suíte + API (curl) + front (Playwright) → qa-report.md
    ├─ squad-reviewer                  code review cético, só código + descrição do MR → review.md
    │     └─ reprovou? volta ao developer (máx. 3 rodadas)
    └─ 🚀 Entrega final: push + MR aberto (Closes #issue, validação e review no corpo)
@@ -24,10 +24,10 @@ A ideia é concentrar o raciocínio caro onde as decisões são tomadas e deixar
 
 | Agente | Papel | Modelo | Esforço | Por quê |
 |---|---|---|---|---|
-| `squad-product-manager` | Product Manager | opus | high | Discovery exige entender regras de negócio, o que já existe na app e fazer as perguntas certas. |
+| `squad-pm` | Product Manager | opus | high | Discovery exige entender regras de negócio, o que já existe na app e fazer as perguntas certas. |
 | `squad-architect` | Architect | opus | xhigh | É onde o pensamento pesado acontece: o plano sai com arquivos, assinaturas e testes por passo, para o Developer não decidir nada. |
-| `squad-developer` | Developer | sonnet | medium | Executa um plano já mapeado, em TDD. Precisa ser preciso, não criativo. |
-| `squad-qa-engineer` | QA Engineer | sonnet | high | Execução procedural (subir app, curl, Playwright), com persistência para lidar com ambiente e casos de borda. |
+| `squad-dev` | Developer | sonnet | medium | Executa um plano já mapeado, em TDD. Precisa ser preciso, não criativo. |
+| `squad-qa` | QA Engineer | sonnet | high | Execução procedural (subir app, curl, Playwright), com persistência para lidar com ambiente e casos de borda. |
 | `squad-reviewer` | Reviewer | opus | high | Faz o code review cético e independente: achar bug sutil e falha de segurança sem contexto pede o modelo mais forte. |
 | Orquestrador (`/squad`) | — | sessão atual | — | Faz a ponte com você, cuida de issue/branch/MR e controla os portões; Sonnet já basta. |
 

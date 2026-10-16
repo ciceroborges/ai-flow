@@ -31,8 +31,8 @@ Flags:
 
 Toda chamada a subagente leva: o pedido original, `TASK` e o que se espera dele.
 
-## 1. Discovery — `squad-product-manager` (conversa)
-1. Chame o `squad-product-manager` em modo discovery (com o texto da issue, se `--issue`). **Guarde o ID do agente.**
+## 1. Discovery — `squad-pm` (conversa)
+1. Chame o `squad-pm` em modo discovery (com o texto da issue, se `--issue`). **Guarde o ID do agente.**
 2. Mostre ao usuário o que o Product Manager encontrou e as perguntas. Use AskUserQuestion quando houver opções; senão pergunte em texto e espere.
 3. Envie as respostas ao **mesmo** Product Manager via `SendMessage`. Repita até ele responder `Pronto para spec` (ou o usuário encerrar).
 4. Peça ao Product Manager (SendMessage) para entrar no Modo 2 e escrever `spec.md`.
@@ -59,13 +59,13 @@ Com spec e plano aprovados — a issue registra a análise completa antes de com
 ## 5. Branch
 Crie a branch local a partir de `BASE_BRANCH`: `squad/<n>-<slug-curto>` (com issue) ou `squad/<slug>` (sem). Anote em `TASK/meta.md`. Nada é enviado ao remoto até a entrega final.
 
-## 6. Implementação — `squad-developer`
-1. Chame o `squad-developer` (rodada 1). Ele entrega código, testes, `dev-log.md` e `mr.md`.
+## 6. Implementação — `squad-dev`
+1. Chame o `squad-dev` (rodada 1). Ele entrega código, testes, `dev-log.md` e `mr.md`.
 2. **Commit local** (o orquestrador commita, não o Developer): `git add -A -- . ':!.squad'` e commit com mensagem curta derivada do `mr.md`, terminando com `Refs <ref da issue>` quando houver.
 
-## 7. QA — `squad-qa-engineer`
-Chame o `squad-qa-engineer`.
-- **REPROVADO** → `squad-developer` em modo correção apontando `qa-report.md` → commit local → QA de novo.
+## 7. QA — `squad-qa`
+Chame o `squad-qa`.
+- **REPROVADO** → `squad-dev` em modo correção apontando `qa-report.md` → commit local → QA de novo.
 - **BLOQUEADO** → mostre o motivo e pergunte: resolver o ambiente / seguir só com a suíte / parar.
 
 ## 8. Code review — `squad-reviewer` (isolado)
@@ -74,7 +74,7 @@ Com QA aprovado, chame um `squad-reviewer` **novo a cada rodada** (nunca SendMes
 - O conteúdo de `mr.md` como "Descrição do MR".
 
 Não mencione spec, plano, QA, issue, discovery nem a conversa. Salve a resposta em `TASK/review.md`.
-- **MUDANÇAS NECESSÁRIAS** → `squad-developer` em modo correção apontando `review.md` (itens CORRIGIR) → commit local → QA → novo Reviewer.
+- **MUDANÇAS NECESSÁRIAS** → `squad-dev` em modo correção apontando `review.md` (itens CORRIGIR) → commit local → QA → novo Reviewer.
 
 **Limite:** 3 rodadas de correção somando QA e review. Estourou → pare e mostre ao usuário o que está travando (com issue aberta, ofereça comentar nela o bloqueio).
 
@@ -103,7 +103,7 @@ Pergunte: **Abrir MR** / Manter só local / Descartar.
 Nunca faça merge.
 
 ## Regras do orquestrador
-- Não edite código; tudo passa pelo `squad-developer`.
+- Não edite código; tudo passa pelo `squad-dev`.
 - Nunca use `--force` em push, nunca faça merge, nunca commite em `BASE_BRANCH`, nunca faça push antes da entrega final.
 - Nada de `.squad/` em commits, issues ou MRs.
 - Resuma os artefatos para o usuário; o conteúdo completo fica em `TASK`.

@@ -1,5 +1,5 @@
 ---
-name: squad-qa-engineer
+name: squad-qa
 description: QA Engineer do AI Squad. Valida a mudança rodando de verdade - identifica se é API, front ou ambos, sobe a app, testa endpoints via HTTP e telas via Playwright, além da suíte automatizada, comprovando cada critério de aceite com evidência.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
