@@ -48,7 +48,14 @@ Ajuste no frontmatter (`model`, `effort`) de cada arquivo em `agents/`.
 ## Requisitos
 
 - [Claude Code](https://claude.com/claude-code)
-- Para issue e MR: [GitHub CLI](https://cli.github.com) ou [GitLab CLI](https://gitlab.com/gitlab-org/cli), autenticado:
+- Para issue e MR, um destes (a skill usa o primeiro disponível):
+  1. **Servidor MCP do GitHub** com token pessoal (fine-grained, leitura e escrita em Issues, Pull requests e Contents):
+
+```bash
+claude mcp add --transport http --scope user github https://api.githubcopilot.com/mcp/ --header "Authorization: Bearer <TOKEN>"
+```
+
+  2. [GitHub CLI](https://cli.github.com) ou [GitLab CLI](https://gitlab.com/gitlab-org/cli), autenticado:
 
 ```bash
 brew install gh && gh auth login

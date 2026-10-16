@@ -25,8 +25,12 @@ Flags:
 1. Slug: `<AAAA-MM-DD>-<kebab-do-pedido>` (máx. 5 palavras). Crie `.squad/<slug>/` na raiz do projeto (caminho absoluto = `TASK`). Garanta `.squad/` no `.gitignore` (pergunte antes de alterar).
 2. Anote o commit base: `git rev-parse HEAD` = `BASE`, e a branch base (`main`, `develop`...) = `BASE_BRANCH`.
 3. **Remoto** (pule se `--local`):
-   - `git remote get-url origin` → plataforma: `github.com` → **GitHub** (`gh`); `gitlab` → **GitLab** (`glab`). Outro → avise e siga como `--local`.
-   - Verifique a CLI e a autenticação: `gh auth status` / `glab auth status`. Se faltar, diga ao usuário como instalar/logar (`brew install gh && gh auth login` ou `brew install glab && glab auth login`) e pergunte: aguardar / seguir como `--local`.
+   - `git remote get-url origin` → plataforma: `github.com` → **GitHub**; `gitlab` → **GitLab**. Outro → avise e siga como `--local`.
+   - Escolha o **canal** para issue/MR, nesta ordem:
+     1. **GitHub MCP** (só GitHub): use ToolSearch com `github issue pull request` para carregar as ferramentas `mcp__github__*` (criar/editar issue, comentar, criar/editar PR). Se existirem, `CANAL = mcp`.
+     2. **CLI**: `gh auth status` (GitHub) ou `glab auth status` (GitLab) funcionando → `CANAL = cli`.
+     3. Nenhum → diga ao usuário como configurar (servidor MCP do GitHub com token, ou `brew install gh && gh auth login` / `brew install glab && glab auth login`) e pergunte: aguardar / seguir como `--local`.
+   - Extraia `owner/nome` do `origin` (`PROJECT_REPO`).
    - `ISSUES_REPO` = `--issues-repo` ou o próprio repositório do projeto.
 4. Working tree precisa estar limpa (`git status --porcelain`, ignorando `.squad/`). Se não estiver, pergunte ao usuário antes de seguir.
 
@@ -59,8 +63,9 @@ Criando a issue:
    - Do plano: **Abordagem técnica** — decisões, arquivos afetados e passos em alto nível.
    - Sem referências a `.squad/`.
 2. Crie a issue (ou, com `--issue`, edite o corpo da existente):
-   - GitHub: `gh issue create -R <ISSUES_REPO> --title "<título>" --body-file TASK/issue.md`
-   - GitLab: `glab issue create -R <ISSUES_REPO> --title "<título>" --description "$(cat TASK/issue.md)"`
+   - `CANAL = mcp`: ferramenta de criar issue do `mcp__github__*` com owner/repo de `ISSUES_REPO`, título e o conteúdo de `issue.md` como corpo.
+   - GitHub CLI: `gh issue create -R <ISSUES_REPO> --title "<título>" --body-file TASK/issue.md`
+   - GitLab CLI: `glab issue create -R <ISSUES_REPO> --title "<título>" --description "$(cat TASK/issue.md)"`
 3. Guarde número e URL (`ISSUE`, `ISSUE_URL`) em `TASK/meta.md`. Mostre o link ao usuário.
 4. Referência para commits e MR: `#<n>` se a issue estiver no mesmo repositório, `<owner/nome>#<n>` se não.
 
@@ -104,9 +109,11 @@ Pergunte: **Abrir MR** / Manter só local / Descartar.
    - **Code review automatizado**: veredito final, sugestões não bloqueantes e perguntas do Reviewer.
    - Sem referências a `.squad/` (cite que screenshots existem localmente, se houver).
 2. `git push -u origin <branch>`
-3. GitHub: `gh pr create --base <BASE_BRANCH> --title "<título>" --body-file TASK/mr-body.md`
-   GitLab: `glab mr create --target-branch <BASE_BRANCH> --title "<título>" --description "$(cat TASK/mr-body.md)"`
-4. Com issue: comente nela o link do MR e marque os CAs validados no checklist (edite o corpo).
+3. Abra o MR/PR:
+   - `CANAL = mcp`: ferramenta de criar pull request do `mcp__github__*` (owner/repo de `PROJECT_REPO`, `head` = branch, `base` = `BASE_BRANCH`, título, corpo de `mr-body.md`).
+   - GitHub CLI: `gh pr create --base <BASE_BRANCH> --title "<título>" --body-file TASK/mr-body.md`
+   - GitLab CLI: `glab mr create --target-branch <BASE_BRANCH> --title "<título>" --description "$(cat TASK/mr-body.md)"`
+4. Com issue: comente nela o link do MR e marque os CAs validados no checklist (edite o corpo) — pelo mesmo canal.
 5. Guarde a URL em `TASK/meta.md` e mostre os links (issue, se houver, e MR).
 
 **Descartar:** pergunte de novo antes de apagar a branch local ou fechar a issue (se houver) — cada uma é uma confirmação.
