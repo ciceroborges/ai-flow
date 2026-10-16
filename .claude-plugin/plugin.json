@@ -1,0 +1,8 @@
+{
+  "name": "ai-flow",
+  "displayName": "AI Flow",
+  "description": "Squad de agentes para desenvolvimento: discovery com PM, plano do Architect, issue, implementação em TDD, QA com API/Playwright, code review isolado e MR na entrega final.",
+  "author": { "name": "Cicero Borges" },
+  "repository": "https://github.com/ciceroborges/ai-flow",
+  "keywords": ["agents", "workflow", "tdd", "qa", "code-review"]
+}

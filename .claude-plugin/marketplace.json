@@ -1,0 +1,13 @@
+{
+  "name": "ai-flow",
+  "description": "AI Flow — squad de agentes para desenvolvimento no Claude Code",
+  "owner": {
+    "name": "Cicero Borges"
+  },
+  "plugins": [
+    {
+      "name": "ai-flow",
+      "source": "./"
+    }
+  ]
+}

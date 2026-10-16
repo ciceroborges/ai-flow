@@ -1,18 +1,19 @@
 # AI Flow
 
-Fluxo agêntico de desenvolvimento para o Claude Code: um squad de subagentes que leva um pedido do discovery ao MR aberto, em qualquer projeto.
+Plugin do Claude Code com um squad de subagentes que leva um pedido do discovery ao MR aberto, em qualquer projeto. A parte interativa (discovery, aprovações, issue, entrega) é uma skill; a parte autônoma (implementação → QA → code review → correções) é um [dynamic workflow](https://code.claude.com/docs/en/workflows).
 
 ```
-/squad <pedido>
+/ai-flow:squad <pedido>                       ← skill (interativa)
    │
-   ├─ squad-pm  ⇄ você   discovery em conversa → spec.md        ── Portão: spec
-   ├─ squad-architect                 plano executável → plan.md             ── Portão: plano
+   ├─ squad-pm ⇄ você      discovery em conversa → spec.md   ── Portão: spec
+   ├─ squad-architect      plano executável → plan.md        ── Portão: plano
    ├─ 📌 Issue (opcional) no repositório (spec + abordagem técnica)
    ├─ branch squad/<issue>-<slug> ou squad/<slug>
-   ├─ squad-dev                 TDD → código + testes + mr.md (commits locais)
-   ├─ squad-qa               suíte + API (curl) + front (Playwright) → qa-report.md
-   ├─ squad-reviewer                  code review cético, só código + descrição do MR → review.md
-   │     └─ reprovou? volta ao developer (máx. 3 rodadas)
+   ├─ ⚙️  workflow squad-build                   ← roda em background (/workflows)
+   │     ├─ squad-dev       TDD → código + testes + mr.md (commits locais)
+   │     ├─ squad-qa        suíte + API (curl) + front (Playwright) → qa-report.md
+   │     ├─ squad-reviewer  code review cético, só diff + descrição do MR
+   │     └─ reprovou? volta ao dev (máx. 3 rodadas de correção)
    └─ 🚀 Entrega final: push + MR aberto (Closes #issue ou contexto da spec, validação e review no corpo)
 ```
 
@@ -29,7 +30,8 @@ A ideia é concentrar o raciocínio caro onde as decisões são tomadas e deixar
 | `squad-dev` | Developer | sonnet | medium | Executa um plano já mapeado, em TDD. Precisa ser preciso, não criativo. |
 | `squad-qa` | QA Engineer | sonnet | high | Execução procedural (subir app, curl, Playwright), com persistência para lidar com ambiente e casos de borda. |
 | `squad-reviewer` | Reviewer | opus | high | Faz o code review cético e independente: achar bug sutil e falha de segurança sem contexto pede o modelo mais forte. |
-| Orquestrador (`/squad`) | — | sessão atual | — | Faz a ponte com você, cuida de issue/branch/MR e controla os portões; Sonnet já basta. |
+| Orquestrador (`/ai-flow:squad`) | — | sessão atual | — | Faz a ponte com você, cuida de issue/branch/MR e controla os portões; Sonnet já basta. |
+| Commits no workflow | — | haiku | low | Só roda `git add` + `git commit` entre as rodadas. |
 
 Ajuste no frontmatter (`model`, `effort`) de cada arquivo em `agents/`.
 
@@ -60,24 +62,38 @@ A plataforma é detectada pelo `origin` do projeto. Sem CLI, o fluxo oferece seg
 
 ## Instalação
 
-```bash
-git clone https://github.com/ciceroborges/ai-flow.git
-cd ai-flow
-./install.sh
+É um plugin com marketplace próprio. No Claude Code (v2.1.275+):
+
+```
+/plugin install ai-flow --marketplace ciceroborges/ai-flow
 ```
 
-Cria symlinks em `~/.claude/agents` e `~/.claude/skills`, deixando o squad disponível em todos os projetos. Editar os arquivos do repo atualiza a instalação na hora. Para remover: `./install.sh --uninstall`.
+Ou pelo terminal:
+
+```bash
+claude plugin marketplace add ciceroborges/ai-flow
+```
+
+```bash
+claude plugin install ai-flow@ai-flow
+```
+
+Para atualizar depois de um push no repo: `claude plugin update ai-flow@ai-flow`.
+
+Para desenvolver o próprio plugin sem instalar: `claude --plugin-dir ~/Projects/ai-squad` e `/reload-plugins` após editar.
+
+Dynamic workflows precisam estar ligados (padrão em Max/Team/Enterprise; no Pro, ative em `/config`). Sem eles, a skill faz o mesmo loop manualmente.
 
 ## Uso
 
 Em qualquer projeto, no Claude Code:
 
 ```
-/squad adicionar login com Google na tela de entrada
-/squad corrigir o cálculo de desconto no checkout --auto
-/squad --issue 42
-/squad nova tela de relatórios --issues-repo minha-org/backlog
-/squad experimento de cache --local
+/ai-flow:squad adicionar login com Google na tela de entrada
+/ai-flow:squad corrigir o cálculo de desconto no checkout --auto
+/ai-flow:squad --issue 42
+/ai-flow:squad nova tela de relatórios --issues-repo minha-org/backlog
+/ai-flow:squad experimento de cache --local
 ```
 
 | Flag | Efeito |
@@ -90,4 +106,14 @@ Em qualquer projeto, no Claude Code:
 
 ## Personalizando por projeto
 
-Os agentes leem o `CLAUDE.md` do projeto. Coloque lá como subir a app, comandos de teste/build, usuários de teste e convenções, e o squad segue. Para sobrescrever um agente só num projeto, crie um arquivo com o mesmo nome em `<projeto>/.claude/agents/`.
+Os agentes leem o `CLAUDE.md` do projeto. Coloque lá como subir a app, comandos de teste/build, usuários de teste e convenções, e o squad segue.
+
+## Estrutura
+
+```
+.claude-plugin/plugin.json       manifesto do plugin
+.claude-plugin/marketplace.json  marketplace (este repo)
+agents/squad-*.md                os 5 agentes
+skills/squad/SKILL.md            orquestrador interativo (/ai-flow:squad)
+workflows/squad-build.js         loop dev → QA → code review (/ai-flow:squad-build)
+```
