@@ -70,7 +70,7 @@ Criando a issue:
 4. Referência para commits e MR: `#<n>` se a issue estiver no mesmo repositório, `<owner/nome>#<n>` se não.
 
 ## 5. Branch
-Crie a branch local a partir de `BASE_BRANCH`: `squad/<n>-<slug-curto>` (com issue) ou `squad/<slug>` (sem). Anote em `TASK/meta.md`. Nada é enviado ao remoto até a entrega final.
+Crie a branch local a partir de `BASE_BRANCH`. Se o `CLAUDE.md` do projeto definir padrão de branch (ex: `feat/<slug>`, `fix/<slug>`), use-o; senão `squad/<n>-<slug-curto>` (com issue) ou `squad/<slug>` (sem). Anote em `TASK/meta.md`. Nada é enviado ao remoto até a entrega final.
 
 ## 6–8. Implementação, QA e code review — workflow `squad-build`
 Essa parte roda sem interação, então é executada como **dynamic workflow**: o loop dev → QA → code review → correção fica no script, com o limite de rodadas garantido e o Reviewer isolado por construção.
