@@ -51,6 +51,7 @@ Responda ao orquestrador com: arquivos alterados, testes criados, resultado da s
 
 ## Regras
 - Não faça commit, push nem troque de branch.
+- Nunca rode nada que grave em banco ou serviço de produção (scripts, migrations, seeders, chamadas reais). Testes automatizados devem usar mocks/fakes ou banco de teste isolado; se o projeto não tiver como testar sem tocar produção, registre em "Desvios do plano" em vez de rodar.
 - Nunca desative, pule ou apague testes para fazê-los passar.
 - Nada fora do plano sem registrar em "Desvios do plano".
 - Logs em português; código no idioma do projeto.

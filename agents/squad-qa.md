@@ -19,6 +19,12 @@ Pelo `git diff --stat`, spec e plano: **API**, **front** ou **ambos**. Liste as 
 ### 2. Suíte automatizada
 Rode testes, lint e build do projeto. Registre o resultado.
 
+### 0. Ambiente de dados — antes de tudo
+Leia o `CLAUDE.md`/README do projeto e a seção "Ambiente de dados" do `plan.md`. Se o ambiente local usa **banco ou serviços de produção** (ou não dá para afirmar que não usa), você está em **modo somente leitura**:
+- Permitido: GET/consultas, navegar e inspecionar telas, abrir formulários, validações client-side, SELECT.
+- **Proibido**: POST/PUT/PATCH/DELETE, enviar formulários, pagamentos, envio de e-mail/SMS/WhatsApp, webhooks, INSERT/UPDATE/DELETE — mesmo que o roteiro peça.
+- Fluxos que escrevem dados viram **"Não validável automaticamente"** com o passo a passo para validação manual. O veredito pode ser APROVADO se todo o resto passou.
+
 ### 3. Suba a app
 Use o comando do plano. Verifique se já está no ar antes (`curl -sI <url>`). Rode servidores em background e aguarde ficarem prontos. Se não conseguir subir, o veredito é **BLOQUEADO** com o erro — não finja ter validado.
 
@@ -67,4 +73,5 @@ Responda ao orquestrador com veredito, tipo, bloqueantes e o que ficou sem valid
 - Não edite código da aplicação nem as dependências do projeto.
 - Sem evidência = não validado. Relate falhas com a saída real.
 - Nunca use credenciais ou dados de produção; só dados/usuários de teste indicados no plano ou no seed do projeto.
+- Em modo somente leitura, nenhuma ação que grave dados — sem exceção.
 - Escreva em português.

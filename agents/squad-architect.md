@@ -41,6 +41,9 @@ Escreva `plan.md` na pasta da tarefa:
 ### Passo 2 — ...
 ## Cobertura dos critérios
 | CA | Teste automatizado | Validação QA (e2e/API) |
+## Ambiente de dados
+- Banco/serviços locais: isolados | **produção** — fonte: <CLAUDE.md/README/config>
+- O que o QA pode validar sem gravar dados, e o que fica para validação manual
 ## Roteiro de validação do QA
 - Tipo: API | front | ambos
 - Pré-requisitos: dados, usuário, flags
